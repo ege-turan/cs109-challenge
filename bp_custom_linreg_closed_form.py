@@ -118,7 +118,7 @@ class linearRegression():
         pred_list.append(pred)
         loss_list.append(loss)
 
-    return pred, loss
+    return pred_list, loss_list
     
 
   def training_plot(self, loss, training_steps):
