@@ -3,7 +3,7 @@
 # Acknowledgements and Citations:
 # Mathematics learned from Probabilistic Machine Learning: An Introduction by Kevin Patrick Murphy. MIT Press, March 2022
 # Closed-form training inspired by Chris Piech's comment about why sk-learn is fast
-# Custom regressing model inspired by Jay Pradip Shah's implementation here: https://www.kaggle.com/jaypradipshah/code
+# Custom regressing model (before discovering the closed-form version, which is the one deployed here) inspired by Jay Pradip Shah's implementation here: https://www.kaggle.com/jaypradipshah/code
 
 import numpy as np
 import pandas as pd
@@ -66,8 +66,8 @@ class linearRegression():
     x_with_bias = np.append(1,X[index])
 
     for i in range(1 + X.shape[1]):
-      gradient = (pred-true[index])*x_with_bias[i]
-      W[i] -= (learning_rate * gradient) 
+      gradient = ( pred - true[index] ) * x_with_bias[i]
+      W[i] -= learning_rate * gradient
 
     return W
   
@@ -78,7 +78,7 @@ class linearRegression():
 
   def train(self, X, y, training_steps=1000, learning_rate=0.001, random_state=0):
 
-    W = np.random.randn(1,X.shape[0]) / np.sqrt(1 + X.shape[1]) # start with random weights
+    W = np.full(X.shape[1] + 1, 0.5)  # start with 0.5 weights
 
     # Calculating the losses, summing into costs. Using it to build a train_loss database
     train_loss = []
@@ -106,8 +106,8 @@ class linearRegression():
 
   def test(self, X_test, y_test, W_trained):
 
-    pred = []
-    loss = []
+    pred_list = []
+    loss_list = []
 
     for i in range(X_test.shape[0]): # indices of tests
         
@@ -115,8 +115,8 @@ class linearRegression():
         diff = y_test[i] - pred
         loss = np.mean( abs(diff) ** 2 )  # Calculate mean squared error (loss function)
 
-        pred.append(pred)
-        loss.append(loss)
+        pred_list.append(pred)
+        loss_list.append(loss)
 
     return pred, loss
     
@@ -130,19 +130,22 @@ class linearRegression():
 
 # helper for test_print
   def test_calc(self, X_test, true, W_trained):
+
     pred = np.dot(X_test, W_trained)
     mae = np.mean(abs(true - pred))
     mse = np.mean((true - pred)**2)
+
     ssr = np.sum((true - pred)**2)  # Sum of squared residuals
     sst = np.sum((true - np.mean(true))**2)  # Total sum of squares
     r_squared = 1 - (ssr / sst)
+
     return test_pred, mae, mse, r_squared
 
   def test_print(self, X_test, y_test, W_trained):
     test_pred, mean_error, test_loss, r_squared = self.test_calc(X_test, y_test, W_trained)
     print(f"Mean Error (ME): {mean_error}")
     print(f"Mean Squared Error (MSE): {test_loss}")
-    print(f"R^2 Score: {r_squared}")
+    print(f"R^2 Score: {r_squared}")                # how much of changes in y / target can be explained by changes in these features
     return test_pred, mean_error, test_loss, r_squared
 
 # Splitting the dataset
