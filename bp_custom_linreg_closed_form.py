@@ -62,12 +62,12 @@ class linearRegression():
     W_optimal = np.linalg.inv(X.T @ X) @ X.T @ y
     return W_optimal
 
-  def update_weights(self,X,pred,true,W,learning_rate,index):
-    x_with_bias = np.append(1,X[index])
+  def update_weights(self,X,pred,true,W,learning_rate,i):
+    x_with_bias = np.append(1,X[i])
 
-    for i in range(1 + X.shape[1]):
-      gradient = ( pred - true[index] ) * x_with_bias[i]
-      W[i] -= learning_rate * gradient
+    for feature in range(1 + X.shape[1]):
+      gradient = ( pred - true[i] ) * x_with_bias[feature]
+      W[feature] -= learning_rate * gradient
 
     return W
   
