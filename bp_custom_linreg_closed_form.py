@@ -1,7 +1,9 @@
 # Ege Turan
+
+# Acknowledgements and Citations:
 # Mathematics learned from Probabilistic Machine Learning: An Introduction by Kevin Patrick Murphy. MIT Press, March 2022
-# Custom regressing model inspired by Jay Pradip Shah's implementation here: https://www.kaggle.com/jaypradipshah/code
 # Closed-form training inspired by Chris Piech's comment about why sk-learn is fast
+# Custom regressing model inspired by Jay Pradip Shah's implementation here: https://www.kaggle.com/jaypradipshah/code
 
 import numpy as np
 import pandas as pd
@@ -56,23 +58,18 @@ class linearRegression():
     # No instance Variables
     pass
 
-  def predict_and_loss( self, X, y, W ):
-      pred = np.dot( W, X )
-      diff = y - pred
-      loss = np.mean( abs(diff) ** 2 )  # Calculate mean squared error (loss function)
-      return pred, loss              # the prediction and how off the prediction was
+  def train_closed_form(self, X, y):
+    W_optimal = np.linalg.inv(X.T @ X) @ X.T @ y
+    return W_optimal
 
   def update_weights(self,X,pred,true,W,learning_rate,index):
     x_with_bias = np.append(1,X[index])
 
     for i in range(1 + X.shape[1]):
-      W[i] -= (learning_rate * (pred-true[index])*x_with_bias[i]) 
+      gradient = (pred-true[index])*x_with_bias[i]
+      W[i] -= (learning_rate * gradient) 
 
     return W
-  
-  def train_closed_form(self, X, y):
-      W_optimal = np.linalg.inv(X.T @ X) @ X.T @ y
-      return W_optimal
   
   def shuffle_train_indices(self, train_indices, random_state=0):
       np.random.seed(random_state)
@@ -81,7 +78,7 @@ class linearRegression():
 
   def train(self, X, y, training_steps=1000, learning_rate=0.001, random_state=0):
 
-    W = np.random.randn(1,X.shape[0]) / np.sqrt(X.shape[1]) # start with random weights
+    W = np.random.randn(1,X.shape[0]) / np.sqrt(1 + X.shape[1]) # start with random weights
 
     # Calculating the losses, summing into costs. Using it to build a train_loss database
     train_loss = []
@@ -96,7 +93,10 @@ class linearRegression():
 
       for i in shuffled_train_indices:
         
-        pred, loss = self.predict_and_loss(X[i],y[i],W[0])
+        pred = np.dot( W[0], X[i] )
+        diff = y[i] - pred
+        loss = np.mean( abs(diff) ** 2 )  # Calculate mean squared error (loss function)
+
         W[0] = self.update_weights(X,pred,y,W[0],learning_rate,i)
         cost += loss
         
@@ -109,9 +109,11 @@ class linearRegression():
     pred = []
     loss = []
 
-    for i in range(X_test.shape[0]): #indices of tests
+    for i in range(X_test.shape[0]): # indices of tests
         
-        loss, pred = self.predict_and_loss(X_test[i], W_trained, y_test[i])
+        pred = np.dot( W_trained, X_test[i] )
+        diff = y_test[i] - pred
+        loss = np.mean( abs(diff) ** 2 )  # Calculate mean squared error (loss function)
 
         pred.append(pred)
         loss.append(loss)
