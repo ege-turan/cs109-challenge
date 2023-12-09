@@ -1,9 +1,9 @@
 # Ege Turan
 
 # Acknowledgements and Citations:
-# Mathematics learned from Probabilistic Machine Learning: An Introduction by Kevin Patrick Murphy. MIT Press, March 2022
+# Probability tools and analysis learned in Stanford's CS 109 F2023 by Chris Piech
+# Additional mathematics for linear regression learned from Probabilistic Machine Learning: An Introduction by Kevin Patrick Murphy. MIT Press, March 2022
 # Closed-form training inspired by Chris Piech's comment about why sk-learn is fast
-# Custom regressing model (before discovering the closed-form version, which is the one deployed here) inspired by Jay Pradip Shah's implementation here: https://www.kaggle.com/jaypradipshah/code
 
 import numpy as np
 import pandas as pd
@@ -76,6 +76,7 @@ class linearRegression():
       np.random.shuffle(train_indices)
       return train_indices
 
+    # This part of the custom regressing model (before discovering the closed-form version, which is the one deployed here) was inspired by Jay Pradip Shah's implementation here: https://www.kaggle.com/jaypradipshah/code
   def train(self, X, y, training_steps=1000, learning_rate=0.001, random_state=0):
 
     W = np.full(X.shape[1] + 1, 0.5)  # start with 0.5 weights
